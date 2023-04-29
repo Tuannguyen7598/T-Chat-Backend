@@ -1,9 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
+import { ResultToApiGateWay, UserDto, UserRole, resulToGateWay } from "src/model";
 
 
-import { UserDto, UserRole } from "src/model/interface/user.interface";
-import { ResultToApiGateWay, resulToGateWay } from "src/model/lib/TransformValue/transformValue";
+
+
+
 
 @Injectable()
 export class AuthService {

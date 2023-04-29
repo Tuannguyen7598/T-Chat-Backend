@@ -6,16 +6,28 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "ES2017",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
+    "paths": {
+      "@node_modules/t-chatsss": [
+        "node_modules/t-chatsss/lib/index.ts"
+      ],
+      "@model/interface": [
+        "model/interface/index.ts"
+      ],
+      "@model/dbConnect": [
+        "model/dbConnect/index.ts"
+      ]
+    },
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "allowJs": true,
   }
 }

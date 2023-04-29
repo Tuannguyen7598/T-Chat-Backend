@@ -1,17 +1,22 @@
 
 import { Prop, Schema } from "@nestjs/mongoose";
-import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { ApiProperty, PartialType } from "@nestjs/swagger";
+import { Transform, plainToClass } from "class-transformer";
+import { IsDate, IsEnum, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, ValidateNested } from "class-validator";
 import { v4 as uuid } from "uuid";
-
 export enum UserRole {
       admin = "admin",
       user = "user",
 }
 
 export class Credentials {
-      password = '';
-      salt = '';
+      @ApiProperty({ required: true })
+      @IsNotEmpty()
+      password: string
+
+      @ApiProperty({ required: true })
+      @IsNotEmpty()
+      salt: string
       static createObj = (src?: Partial<Credentials>): Credentials => {
             const obj = new Credentials();
             return {
@@ -23,41 +28,41 @@ export class Credentials {
 @Schema()
 export class UserDto {
       @Prop({ required: true, type: 'string', default: uuid() })
+      @IsOptional()
       @ApiProperty({ required: true })
-      @IsNotEmpty()
-      id = uuid()
+      id: string = uuid()
 
       @Prop({ required: true, type: 'string' })
       @ApiProperty({ required: true })
       @IsNotEmpty()
       @IsString()
-      username = ""
+      username: string = ""
 
       @Prop({ type: () => Credentials })
       @ApiProperty({ required: true })
       @IsNotEmpty()
-      credentials = Credentials.createObj()
+      @ValidateNested()
+      credentials: Credentials // ??????
 
       @Prop({ required: true, type: 'string' })
-      @ApiProperty({ required: true })
+      @ApiProperty({ required: true, enum: ['admin | user'] })
       @IsNotEmpty()
-      @IsString()
-      role = UserRole.user;
+      @IsEnum({ a: 'user', b: 'admin' })
+      role: UserRole = UserRole.user;
 
       @Prop({ required: true, type: 'Date', default: new Date() })
       @IsNotEmpty()
-      @IsDate()
-      createAt = new Date()
+      createAt: Date = new Date()
 
       @Prop({ required: true, type: 'Date', default: new Date() })
       @IsNotEmpty()
-      @IsDate()
-      deleteAt = new Date()
+      @ApiProperty()
+      deleteAt: Date = new Date()
 
       @Prop({ required: true, type: 'Date', default: new Date() })
       @IsNotEmpty()
-      @IsDate()
-      updateAt = new Date()
+      @ApiProperty()
+      updateAt: Date = new Date()
 
       static createObj = (src?: Partial<UserDto>): UserDto => {
             const obj = new UserDto();

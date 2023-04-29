@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { randomUUID } from "crypto";
 import { HydratedDocument } from "mongoose";
-import { Credentials, UserDto, UserRole } from "src/model/interface/user.interface";
-
+import { UserDto } from "../../interface/user.interface";
 
 export type UserDocument = HydratedDocument<UserDto>;
 

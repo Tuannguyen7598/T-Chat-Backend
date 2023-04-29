@@ -1,7 +1,7 @@
 import { Controller } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 import { AuthService } from "./auth.service";
-import { UserDto } from "src/model/interface/user.interface";
+import { UserDto } from "t-chatsss";
 
 
 @Controller()

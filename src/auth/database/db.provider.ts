@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
-import { UserSchema } from "../../model/dbConnect/schema/user.schema";
 import * as crypto from "crypto";
+import { UserSchema } from "src/model";
+
+
+
 
 export const dbProviders = [
   {
