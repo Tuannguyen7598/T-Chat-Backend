@@ -1,0 +1,28 @@
+{
+  "name": "t-chatsss",
+  "version": "0.1.8",
+  "description": "\"my package\"",
+  "main": "index.js",
+  "dependencies": {
+    "@nestjs/mongoose": "^9.2.2",
+    "mongoose": "^7.0.3",
+    "@nestjs/common": "^9.0.0",
+    "rxjs": "^7.2.0",
+    "@nestjs/swagger": "^6.2.1",
+    "@nestjs/core": "^9.0.0",
+    "@nestjs/jwt": "^10.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tuannguyen7598/T-chat-models.git"
+  },
+  "author": "Nguyễn Quang Tuấn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tuannguyen7598/T-chat-models/issues"
+  },
+  "homepage": "https://github.com/Tuannguyen7598/T-chat-models#readme"
+}

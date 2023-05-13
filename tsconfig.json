@@ -20,6 +20,12 @@
       ],
       "@model/dbConnect": [
         "model/dbConnect/index.ts"
+      ],
+      "libs/libsss": [
+        "libs/share/src"
+      ],
+      "libs/libsss/*": [
+        "libs/share/src/*"
       ]
     },
     "skipLibCheck": true,
@@ -28,6 +34,6 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "allowJs": true,
+    "allowJs": true
   }
 }
