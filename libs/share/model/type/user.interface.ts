@@ -82,10 +82,13 @@ export enum UserActonTypeAccount {
       registerSuccess = "Register Succsess",
       registerFalse = "Register False",
       settingAccountFalse = "Setting Account False",
-      settingAccountTrue = "Setting Account True",
+      settingAccountSuccess = "Setting Account Success",
+      deleteAccountFalse = "Delete Acconnt False",
+      deleteAccountSuccess = "Delete Account Success"
 }
 export enum KeyToCommunicateUserServer {
       login = "Login",
       register = "Register",
-      settingAccount = "Setting Account"
+      settingAccount = "Setting Account",
+      deleteAccount = "Delete Accont"
 }

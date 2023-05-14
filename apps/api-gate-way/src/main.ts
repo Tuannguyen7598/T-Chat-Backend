@@ -18,8 +18,8 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   await app.listen(3000, () => {
-    console.log('this server run in 3000');
-    console.info('Redis server run in 6379')
+    console.log('Api gate way listen on port 3000');
+    console.info('Redis run on port 6379')
   });
 
 }

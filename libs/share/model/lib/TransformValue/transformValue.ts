@@ -11,13 +11,19 @@ export const fromDataEntity = <TDataEntity>(
     delete result['_id']
     return result
 };
-export const resulToGateWay = <Data>(message: string, payload: Data, filedsDelete: Array<keyof Data>) => {
-
-    const resul = {
+export const resulToGateWay = <Data>(message: string, payload?: Data, filedsDelete?: Array<keyof Data>) => {
+    if (payload === null || payload ===undefined) {
+        const result = {
+            message,
+            payload: []
+        }
+        return result
+    }
+    const result = {
         message,
         payload: fromDataEntity(payload, filedsDelete as Array<string>)
     }
-    return resul
+    return result
 }
 export interface ResultToApiGateWay<data> {
     message: string,

@@ -74,6 +74,19 @@ export class AuthController {
     if (!updateUser.toObject()) {
       return resulToGateWay(UserActonTypeAccount.settingAccountFalse,user,[])
     }
-    return resulToGateWay(UserActonTypeAccount.settingAccountTrue,updateUser.toObject(),['credentials'])
+    return resulToGateWay(UserActonTypeAccount.settingAccountSuccess,updateUser.toObject(),['credentials'])
+  }
+
+  @MessagePattern(KeyToCommunicateUserServer.deleteAccount)
+  async deleteAccont(@Payload() userId: string) {
+    const findUser = await this.userModel.findOne({id: userId})
+    if (findUser === null || findUser === undefined) {
+      return resulToGateWay(UserActonTypeAccount.deleteAccountFalse)
+    }
+    const deleteAccount = await this.userModel.findOneAndDelete({...findUser.toObject()})
+    if(deleteAccount === null || deleteAccount === undefined){
+      return resulToGateWay(UserActonTypeAccount.deleteAccountFalse)
+    }
+    return resulToGateWay(UserActonTypeAccount.deleteAccountSuccess)
   }
 }

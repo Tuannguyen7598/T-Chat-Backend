@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Inject, Param, Post, Put } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy } from '@nestjs/microservices/client';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -27,13 +27,13 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Register succesfully' })
   @ApiBadRequestResponse({ status: 400, description: 'Validation Error' })
   async createUser(@Body() user: UserDto): Promise<any> {
-    const resul: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.register, user))
-    if (resul.message === UserActonTypeAccount.registerFalse) {
-      return resul.message;
+    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.register, user))
+    if (result.message === UserActonTypeAccount.registerFalse) {
+      return result.message;
     }
     const userRegister = {
-      token: this.jwtService.sign(resul.payload),
-      ...resul.payload
+      token: this.jwtService.sign(result.payload),
+      ...result.payload
     }
     return userRegister
   }
@@ -43,13 +43,13 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Logged In' })
   @ApiBadRequestResponse({ status: 400, description: 'Validation Error' })
   async getUser(@Body() user: UserDto): Promise<any> {
-    const resul: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.login, user))
-    if (resul.message === UserActonTypeAccount.loginFalse) {
-      return resul.message;
+    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.login, user))
+    if (result.message === UserActonTypeAccount.loginFalse) {
+      return result.message;
     }
     const userLogin = {
-      token: this.jwtService.sign(resul.payload),
-      ...resul.payload
+      token: this.jwtService.sign(result.payload),
+      ...result.payload
     }
     return userLogin
   }
@@ -64,15 +64,25 @@ export class AuthController {
       ...user,
       id: id
     }
-    const resul: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.settingAccount, userSettingAccount))
+    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.settingAccount, userSettingAccount))
 
-    if (UserActonTypeAccount.settingAccountFalse) {
-      return resul.message;
+    if (result.message ===  UserActonTypeAccount.settingAccountFalse) {
+      return result.message;
     }
     const userResult = {
-      token: this.jwtService.sign(resul.payload),
-      ...resul.payload
+      token: this.jwtService.sign(result.payload),
+      ...result.payload
     }
     return userResult
+  }
+
+  @Auth('admin', 'user')
+  @Delete('delete-account/:id')
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @ApiResponse({ status: 200, description: 'Logged In' })
+  @ApiBadRequestResponse({ status: 400, description: 'Validation Error' })
+  async deleteAcount(@Param('id') userId: string): Promise<any> {
+    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.deleteAccount,userId ))
+    return result.message
   }
 }
