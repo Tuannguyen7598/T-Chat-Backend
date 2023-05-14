@@ -8,12 +8,12 @@ import { AuthService } from './auth.service';
 
 
 
-import { UserSettingAccountDto } from './dto/user.SettingAccount';
 import { Auth, KeyToCommunicateUserServer, ResultToApiGateWay, UserActonTypeAccount, UserDto } from 'libs/share/model';
+import { UserSettingAccountDto } from './dto/user.SettingAccount';
 
 
 
-@Controller('login')
+@Controller('')
 @ApiTags('login')
 @ApiBearerAuth()
 export class AuthController {
@@ -66,7 +66,7 @@ export class AuthController {
     }
     const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.settingAccount, userSettingAccount))
 
-    if (result.message ===  UserActonTypeAccount.settingAccountFalse) {
+    if (result.message === UserActonTypeAccount.settingAccountFalse) {
       return result.message;
     }
     const userResult = {
@@ -82,7 +82,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Logged In' })
   @ApiBadRequestResponse({ status: 400, description: 'Validation Error' })
   async deleteAcount(@Param('id') userId: string): Promise<any> {
-    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.deleteAccount,userId ))
+    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.deleteAccount, userId))
     return result.message
   }
 }

@@ -1,8 +1,7 @@
 
 import { Prop, Schema } from "@nestjs/mongoose";
-import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { Transform, plainToClass } from "class-transformer";
-import { IsDate, IsEnum, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, ValidateNested } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 import { v4 as uuid } from "uuid";
 export enum UserRole {
       admin = "admin",
@@ -15,7 +14,7 @@ export class Credentials {
       password: string
 
       @ApiProperty({ required: true })
-      @IsNotEmpty()
+      @IsOptional()
       salt: string
       static createObj = (src?: Partial<Credentials>): Credentials => {
             const obj = new Credentials();
@@ -27,7 +26,7 @@ export class Credentials {
 };
 @Schema()
 export class UserDto {
-      @Prop({ required: true, type: 'string', default: uuid() })
+      @Prop({ type: 'string', default: uuid() })
       @IsOptional()
       @ApiProperty({ required: true })
       id: string = uuid()
@@ -38,11 +37,11 @@ export class UserDto {
       @IsString()
       username: string = ""
 
-      @Prop({ type: () => Credentials })
+      @Prop({ required: true, type: () => Credentials })
       @ApiProperty({ required: true })
       @IsNotEmpty()
       @ValidateNested()
-      credentials: Credentials // ??????
+      credentials: Credentials
 
       @Prop({ required: true, type: 'string' })
       @ApiProperty({ required: true, enum: ['admin | user'] })
@@ -50,16 +49,18 @@ export class UserDto {
       @IsEnum({ a: 'user', b: 'admin' })
       role: UserRole = UserRole.user;
 
-      @Prop({ required: true, type: 'Date', default: new Date() })
-      @IsNotEmpty()
+      @Prop({ type: 'Date', default: new Date() })
+      @IsOptional()
+      @ApiProperty()
       createAt: Date = new Date()
 
-      @Prop({ required: true, type: 'Date', default: new Date() })
-      @IsNotEmpty()
+      @Prop({ type: 'Date', default: new Date() })
+      @IsOptional()
       @ApiProperty()
       deleteAt: Date = new Date()
 
-      @Prop({ required: true, type: 'Date', default: new Date() })
+      @Prop({ type: 'Date', default: new Date() })
+      @IsOptional()
       @IsNotEmpty()
       @ApiProperty()
       updateAt: Date = new Date()
@@ -77,8 +78,8 @@ export class Message {
       id: string
 }
 export enum UserActonTypeAccount {
-      loginSuccess= "Login Success",
-      loginFalse= "Login False",
+      loginSuccess = "Login Success",
+      loginFalse = "Login False",
       registerSuccess = "Register Succsess",
       registerFalse = "Register False",
       settingAccountFalse = "Setting Account False",
