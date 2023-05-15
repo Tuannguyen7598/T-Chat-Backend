@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build": "nest build ",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start:app-one": "nest start api-gate-way --watch",
     "start:app-two": "nest start user-server --watch",
