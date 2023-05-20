@@ -1,15 +1,17 @@
-import { Body, Controller, Delete, Inject, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy } from '@nestjs/microservices/client';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { firstValueFrom } from 'rxjs';
-
+import bizSdk from 'facebook-nodejs-business-sdk';
+import { async, firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 
 
 
 import { Auth, KeyToCommunicateUserServer, ResultToApiGateWay, UserActonTypeAccount, UserDto } from 'libs/share/model';
 import { UserSettingAccountDto } from './dto/user.SettingAccount';
+import { FacebookAdsApi } from 'facebook-nodejs-business-sdk';
+import { AdAccount } from 'facebook-nodejs-business-sdk';
 
 
 
@@ -22,6 +24,13 @@ export class AuthController {
     private readonly authService: AuthService,
     private jwtService: JwtService
   ) { }
+
+
+  @Get('')
+  async tesst2() {
+    console.log('heloo');
+
+  }
 
   @Post('register')
   @ApiResponse({ status: 200, description: 'Register succesfully' })
@@ -84,5 +93,19 @@ export class AuthController {
   async deleteAcount(@Param('id') userId: string): Promise<any> {
     const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.deleteAccount, userId))
     return result.message
+  }
+
+  @Get('facebook')
+  async tesst(@Query('code') token: string): Promise<any> {
+    console.log('token', token);
+
+    const api = FacebookAdsApi.init(token);
+
+
+    const acount = new AdAccount('act_240058718626210')
+    acount.read([]).then((e) => console.log(e)
+    ).catch((e) => console.log(e)
+    )
+    return 'heloo234'
   }
 }

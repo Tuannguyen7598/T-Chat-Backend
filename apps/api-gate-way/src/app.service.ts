@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Query } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  getData(): string {
+  getData(@Query('code') code:string): string {
+    console.log('/',code);
+    
     return 'Hello World!';
   }
 }
