@@ -26,7 +26,7 @@ export class Credentials {
 };
 @Schema()
 export class UserDto {
-      @Prop({ type: 'string', default: uuid() })
+      @Prop({ type: 'string', default: uuid(),required: true, })
       @IsOptional()
       @ApiProperty({ required: true })
       id: string = uuid()
@@ -49,17 +49,17 @@ export class UserDto {
       @IsEnum({ a: 'user', b: 'admin' })
       role: UserRole = UserRole.user;
 
-      @Prop({ type: 'Date', default: new Date() })
+      @Prop({ type: 'Date', default: new Date(),required: true, })
       @IsOptional()
       @ApiProperty()
       createAt: Date = new Date()
 
-      @Prop({ type: 'Date', default: new Date() })
+      @Prop({ type: 'Date', default: new Date(),required: true, })
       @IsOptional()
       @ApiProperty()
       deleteAt: Date = new Date()
 
-      @Prop({ type: 'Date', default: new Date() })
+      @Prop({ type: 'Date', default: new Date(),required: true,})
       @IsOptional()
       @IsNotEmpty()
       @ApiProperty()
@@ -74,9 +74,7 @@ export class UserDto {
       };
 }
 
-export class Message {
-      id: string
-}
+
 export enum UserActonTypeAccount {
       loginSuccess = "Login Success",
       loginFalse = "Login False",

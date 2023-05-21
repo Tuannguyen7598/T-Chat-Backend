@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
 import * as crypto from "crypto";
-import { UserSchema } from "libs/share/model";
+import { UserSchema, dbconfig } from "libs/share/model";
+import mongoose from "mongoose";
 
 
 
@@ -11,12 +11,17 @@ export const dbProviders = [
     provide: "USER_MODEL",
     useFactory: async () => {
       try {
-        return await mongoose.model("user", UserSchema);
+        const connect = mongoose.connection.readyState
+        if (connect === 0 || connect === 3 || connect === 99) {
+          console.error('MongoDB is disconect')
+          return
+        }
+        return  mongoose.model("user", UserSchema);
       } catch (error) {
         console.error(error);
       }
     },
-    inject: ["DATABASE_CONNECTION"],
+    inject: ["DATABASE_CONNECTION_USERSERVICE"],
   },
 ];
 
