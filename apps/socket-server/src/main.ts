@@ -4,10 +4,12 @@ import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { useContainer } from "class-validator";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-
+import * as socketio from 'socket.io';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+  app.enableCors({allowedHeaders:['Access-Control-Allow-Origin']});
+  const server = app.getHttpServer()
+
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true, transformOptions: { enableImplicitConversion: true } }))
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const config = new DocumentBuilder()

@@ -19,6 +19,7 @@ export class RoleGuard implements CanActivate {
       const authorization = request.headers?.authorization?.toString() ?? (request.query.token as string) ?? "";
       const authToken = this.jwtService.verify(authorization.replace("Bearer ", ""));
       let count = 0
+      request.userInfor = authToken
       roles.forEach(x => {
         if (x === authToken.role) {
           count++
@@ -27,6 +28,7 @@ export class RoleGuard implements CanActivate {
       if (count > 0) {
         return true
       } else { false }
+      
     } catch (error) {
       console.error(error)
     }

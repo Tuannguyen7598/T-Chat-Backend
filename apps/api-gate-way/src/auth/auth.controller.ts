@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Inject, Param, Post, Put, Query, Req } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy } from '@nestjs/microservices/client';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -12,6 +12,7 @@ import { Auth, KeyToCommunicateUserServer, ResultToApiGateWay, UserActonTypeAcco
 import { UserSettingAccountDto } from './dto/user.SettingAccount';
 import { FacebookAdsApi } from 'facebook-nodejs-business-sdk';
 import { AdAccount } from 'facebook-nodejs-business-sdk';
+import { Request } from 'express';
 
 
 
@@ -95,17 +96,17 @@ export class AuthController {
     return result.message
   }
 
-  @Get('facebook')
-  async tesst(@Query('code') token: string): Promise<any> {
-    console.log('token', token);
 
-    const api = FacebookAdsApi.init(token);
+  @Auth('admin', 'user')
+  @Get('get-friends')
+  
+  async  getFriends(@Body() user: any,@Req() req: any): Promise<any> {
+    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.getFriends,{userId: req.userInfor}))
+    console.log('result',result);
+    
 
-
-    const acount = new AdAccount('act_240058718626210')
-    acount.read([]).then((e) => console.log(e)
-    ).catch((e) => console.log(e)
-    )
-    return 'heloo234'
+    
+   
   }
+
 }

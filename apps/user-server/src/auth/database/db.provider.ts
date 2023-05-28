@@ -1,5 +1,5 @@
 import * as crypto from "crypto";
-import { UserSchema, dbconfig } from "libs/share/model";
+import { FriendSchema, UserSchema, dbconfig } from "libs/share/model";
 import mongoose from "mongoose";
 
 
@@ -16,7 +16,23 @@ export const dbProviders = [
           console.error('MongoDB is disconect')
           return
         }
-        return  mongoose.model("user", UserSchema);
+        return  mongoose.model("user", FriendSchema);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    inject: ["DATABASE_CONNECTION_USERSERVICE"],
+  },
+  {
+    provide: "FRIEND_MODEL",
+    useFactory: async () => {
+      try {
+        const connect = mongoose.connection.readyState
+        if (connect === 0 || connect === 3 || connect === 99) {
+          console.error('MongoDB is disconect')
+          return
+        }
+        return  mongoose.model("friend", UserSchema);
       } catch (error) {
         console.error(error);
       }

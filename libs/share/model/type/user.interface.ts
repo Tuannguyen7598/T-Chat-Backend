@@ -26,7 +26,7 @@ export class Credentials {
 };
 @Schema()
 export class UserDto {
-      @Prop({ type: 'string', default: uuid(),required: true, })
+      @Prop({ type: 'string', default: uuid(), required: true, })
       @IsOptional()
       @ApiProperty({ required: true })
       id: string = uuid()
@@ -49,21 +49,22 @@ export class UserDto {
       @IsEnum({ a: 'user', b: 'admin' })
       role: UserRole = UserRole.user;
 
-      @Prop({ type: 'Date', default: new Date(),required: true, })
+      @Prop({ type: 'Date', default: new Date(), required: true, })
       @IsOptional()
       @ApiProperty()
       createAt: Date = new Date()
 
-      @Prop({ type: 'Date', default: new Date(),required: true, })
+      @Prop({ type: 'Date', default: new Date(), required: true, })
       @IsOptional()
       @ApiProperty()
       deleteAt: Date = new Date()
 
-      @Prop({ type: 'Date', default: new Date(),required: true,})
+      @Prop({ type: 'Date', default: new Date(), required: true, })
       @IsOptional()
       @IsNotEmpty()
       @ApiProperty()
       updateAt: Date = new Date()
+
 
       static createObj = (src?: Partial<UserDto>): UserDto => {
             const obj = new UserDto();
@@ -72,6 +73,18 @@ export class UserDto {
                   ...src,
             };
       };
+}
+
+@Schema()
+export class Friend {
+      @Prop({ type: 'string', default: uuid(), required: true, })
+      id: string
+
+      @Prop({ type: 'string', required: true })
+      userId: string
+
+      @Prop({ type: 'Array', required: true })
+      listFriend: Array<UserDto>
 }
 
 
@@ -89,5 +102,6 @@ export enum KeyToCommunicateUserServer {
       login = "Login",
       register = "Register",
       settingAccount = "Setting Account",
-      deleteAccount = "Delete Accont"
+      deleteAccount = "Delete Accont",
+      getFriends = "Get-Friends"
 }

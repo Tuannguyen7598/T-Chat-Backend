@@ -1,10 +1,9 @@
 import { Controller, Inject } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 
-import { AuthService } from "./auth.service";
+import { KeyToCommunicateUserServer, UserActonTypeAccount, UserDto, resulToGateWay } from "libs/share/model";
 import { Model } from "mongoose";
-import { UserDto, resulToGateWay } from "libs/share/model";
-import { KeyToCommunicateUserServer, UserActonTypeAccount } from "libs/share/model";
+import { AuthService } from "./auth.service";
 
 
 @Controller()
@@ -15,7 +14,7 @@ export class AuthController {
     private readonly authService: AuthService) { }
 
   @MessagePattern(KeyToCommunicateUserServer.register)
-  async register(@Payload() user: UserDto) {
+  async register(@Payload() user: UserDto): Promise<any> {
     const findUser = await this.userModel.findOne({
       username: user.username
     })
@@ -39,7 +38,7 @@ export class AuthController {
   }
 
   @MessagePattern(KeyToCommunicateUserServer.login)
-  async login(@Payload() user: UserDto) {
+  async login(@Payload() user: UserDto): Promise<any> {
     const checkUser = await this.userModel.findOne({
       username: user.username
     })
@@ -55,38 +54,46 @@ export class AuthController {
   }
 
   @MessagePattern(KeyToCommunicateUserServer.settingAccount)
-  async settingAccount(@Payload() user: UserDto) {
+  async settingAccount(@Payload() user: UserDto): Promise<any> {
     const checkUser = await this.userModel.findOne({
       id: user.id
-    }) 
+    })
     if (checkUser === null || checkUser === undefined) {
       return resulToGateWay(UserActonTypeAccount.settingAccountFalse, user, [])
     }
     const newSalt = this.hassPassword.buySalt()
-    const newPassword = this.hassPassword.hashPassword(user.credentials.password,newSalt)
+    const newPassword = this.hassPassword.hashPassword(user.credentials.password, newSalt)
     const updateUser = await this.userModel.findOneAndUpdate({ id: checkUser.id }, {
       $set: {
         username: user.username ?? checkUser.username,
         'credentials.password': user.credentials.password !== null || user.credentials.password !== undefined ? newPassword : checkUser.credentials.password,
-        'credentials.salt': user.credentials.salt!== null || user.credentials.password !== undefined ? newSalt : checkUser.credentials.salt
+        'credentials.salt': user.credentials.salt !== null || user.credentials.password !== undefined ? newSalt : checkUser.credentials.salt
       }
     })
     if (!updateUser.toObject()) {
-      return resulToGateWay(UserActonTypeAccount.settingAccountFalse,user,[])
+      return resulToGateWay(UserActonTypeAccount.settingAccountFalse, user, [])
     }
-    return resulToGateWay(UserActonTypeAccount.settingAccountSuccess,updateUser.toObject(),['credentials'])
+    return resulToGateWay(UserActonTypeAccount.settingAccountSuccess, updateUser.toObject(), ['credentials'])
   }
 
   @MessagePattern(KeyToCommunicateUserServer.deleteAccount)
-  async deleteAccont(@Payload() userId: string) {
-    const findUser = await this.userModel.findOne({id: userId})
+  async deleteAccont(@Payload() userId: string): Promise<any> {
+    const findUser = await this.userModel.findOne({ id: userId })
     if (findUser === null || findUser === undefined) {
       return resulToGateWay(UserActonTypeAccount.deleteAccountFalse)
     }
-    const deleteAccount = await this.userModel.findOneAndDelete({...findUser.toObject()})
-    if(deleteAccount === null || deleteAccount === undefined){
+    const deleteAccount = await this.userModel.findOneAndDelete({ ...findUser.toObject() })
+    if (deleteAccount === null || deleteAccount === undefined) {
       return resulToGateWay(UserActonTypeAccount.deleteAccountFalse)
     }
     return resulToGateWay(UserActonTypeAccount.deleteAccountSuccess)
   }
+
+  //Message
+  @MessagePattern(KeyToCommunicateUserServer.getFriends)
+  async getFriends(@Payload() userid: string): Promise<any> {
+    
+   }
+
+
 }
