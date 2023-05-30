@@ -75,17 +75,7 @@ export class UserDto {
       };
 }
 
-@Schema()
-export class Friend {
-      @Prop({ type: 'string', default: uuid(), required: true, })
-      id: string
 
-      @Prop({ type: 'string', required: true })
-      userId: string
-
-      @Prop({ type: 'Array', required: true })
-      listFriend: Array<UserDto>
-}
 
 
 export enum UserActonTypeAccount {
@@ -96,12 +86,16 @@ export enum UserActonTypeAccount {
       settingAccountFalse = "Setting Account False",
       settingAccountSuccess = "Setting Account Success",
       deleteAccountFalse = "Delete Acconnt False",
-      deleteAccountSuccess = "Delete Account Success"
+      deleteAccountSuccess = "Delete Account Success",
+      friendCollectionNotexist = 'Friend collection does not exist',
+      addFriendFalse = "Add Friend False",
+      addFriendSuccess = "Add Friend Success"
 }
 export enum KeyToCommunicateUserServer {
       login = "Login",
       register = "Register",
       settingAccount = "Setting Account",
       deleteAccount = "Delete Accont",
-      getFriends = "Get-Friends"
+      getFriends = "Get-Friends",
+      addFriend = "Add Friend"
 }

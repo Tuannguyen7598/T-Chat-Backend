@@ -8,6 +8,10 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageService } from './message.service';
 
+interface ListSocketOnConnect {
+  socketId: string;
+  userId: string;
+}
 @WebSocketGateway(3003, {
   cors: {
     origin: '*',
@@ -20,7 +24,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
     @Inject("MESSAGE_MODEL") private userModel: Model<BoxChatDto>,
     private readonly messageService: MessageService,
   ) { }
-
+  listUserOnline: Array<ListSocketOnConnect> = []
   @WebSocketServer()
   server: Server;
 
@@ -54,13 +58,23 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
 
 
   handleConnection(socket: Socket, ...args: any[]) {
-    console.log('client',socket.id, 'is connected')
-    console.log(socket.handshake.query.userId);
-    this.server.emit('Login','newUserLogin')
-    
+    console.log('client', socket.id,'conected');
+    const userId = socket.handshake.query.userId
+    if (userId !== '') {
+      this.listUserOnline.push({
+        userId: socket.handshake.query.userId as string,
+        socketId: socket.id
+      })
+      this.server.emit('newUserOnline',this.listUserOnline)
+    }
+  
   }
   handleDisconnect(client: Socket) {
+    
     console.log('client', client.id,'disconected');
+    this.listUserOnline =  this.listUserOnline.filter((a)=> a.socketId === client.id)
+    console.log('array socket',this.listUserOnline);
+    
     
   }
   afterInit(server: Server) {

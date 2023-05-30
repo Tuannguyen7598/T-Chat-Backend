@@ -13,6 +13,7 @@ import { UserSettingAccountDto } from './dto/user.SettingAccount';
 import { FacebookAdsApi } from 'facebook-nodejs-business-sdk';
 import { AdAccount } from 'facebook-nodejs-business-sdk';
 import { Request } from 'express';
+import { AddFriendDto } from './dto/userLogin.dto';
 
 
 
@@ -25,6 +26,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private jwtService: JwtService
   ) { }
+  
 
 
   @Get('')
@@ -53,7 +55,10 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Logged In' })
   @ApiBadRequestResponse({ status: 400, description: 'Validation Error' })
   async getUser(@Body() user: UserDto): Promise<any> {
+   
+    
     const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.login, user))
+    
     if (result.message === UserActonTypeAccount.loginFalse) {
       return result.message;
     }
@@ -99,14 +104,23 @@ export class AuthController {
 
   @Auth('admin', 'user')
   @Get('get-friends')
-  
   async  getFriends(@Body() user: any,@Req() req: any): Promise<any> {
     const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.getFriends,{userId: req.userInfor}))
-    console.log('result',result);
+    if (result.message === UserActonTypeAccount.friendCollectionNotexist) {
+      return result.message
+    }
     
-
-    
-   
+    return result.payload
   }
 
+  @Auth('admin','user')
+  @ApiParam({name: 'id',description: 'userId'})
+  @Post('add-friend')
+  async addFriend(@Body() friend: AddFriendDto, @Query('userId') userId: string ): Promise<any>{
+    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.addFriend,{userId: userId,friend: friend}))
+    if (result.message === UserActonTypeAccount.addFriendFalse) {
+      return result.message
+    }
+    return result.payload
+  }
 }

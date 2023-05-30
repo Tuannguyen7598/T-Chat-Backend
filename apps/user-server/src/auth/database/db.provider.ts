@@ -16,7 +16,7 @@ export const dbProviders = [
           console.error('MongoDB is disconect')
           return
         }
-        return  mongoose.model("user", FriendSchema);
+        return  mongoose.model("user", UserSchema);
       } catch (error) {
         console.error(error);
       }
@@ -32,7 +32,7 @@ export const dbProviders = [
           console.error('MongoDB is disconect')
           return
         }
-        return  mongoose.model("friend", UserSchema);
+        return  mongoose.model("friend", FriendSchema);
       } catch (error) {
         console.error(error);
       }
