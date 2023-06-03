@@ -2,13 +2,14 @@ import { Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'http';
-import { BoxChatDto } from 'libs/share/model';
+
 import { AuthSocket } from 'libs/share/model/lib/Authenticate/auth-socket.decorator';
 import { Model } from 'mongoose';
 import { Socket } from 'socket.io';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageService } from './message.service';
+import { BoxChatPerSonalDto } from 'libs/share/model';
 
 interface ListSocketOnConnect {
   socketId: string;
@@ -23,7 +24,7 @@ interface ListSocketOnConnect {
 })
 export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   constructor(
-    @Inject("MESSAGE_MODEL") private userModel: Model<BoxChatDto>,
+    @Inject("MESSAGE_MODEL") private userModel: Model<BoxChatPerSonalDto>,
     private jwtService: JwtService,
     private readonly messageService: MessageService,
   ) { }

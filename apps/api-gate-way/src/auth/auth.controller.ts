@@ -110,10 +110,10 @@ export class AuthController {
     if (result.message === UserActonTypeAccount.getUserFalse) {
       return result.message
     }
-   
-    
     return Object.values(result.payload)
   }
 
+  
+  
   
 }
