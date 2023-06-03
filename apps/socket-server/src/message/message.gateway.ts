@@ -1,7 +1,9 @@
 import { Inject } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'http';
 import { BoxChatDto } from 'libs/share/model';
+import { AuthSocket } from 'libs/share/model/lib/Authenticate/auth-socket.decorator';
 import { Model } from 'mongoose';
 import { Socket } from 'socket.io';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -22,6 +24,7 @@ interface ListSocketOnConnect {
 export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   constructor(
     @Inject("MESSAGE_MODEL") private userModel: Model<BoxChatDto>,
+    private jwtService: JwtService,
     private readonly messageService: MessageService,
   ) { }
   listUserOnline: Array<ListSocketOnConnect> = []
@@ -51,6 +54,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
     return this.messageService.update(updateMessageDto.id, updateMessageDto);
   }
 
+  @AuthSocket('admin', 'user')
   @SubscribeMessage('removeMessage')
   remove(@MessageBody() id: number) {
     return this.messageService.remove(id);
@@ -58,24 +62,30 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
 
 
   handleConnection(socket: Socket, ...args: any[]) {
-    console.log('client', socket.id,'conected');
-    const userId = socket.handshake.query.userId
-    if (userId !== '') {
-      this.listUserOnline.push({
-        userId: socket.handshake.query.userId as string,
-        socketId: socket.id
-      })
-      this.server.emit('newUserOnline',this.listUserOnline)
+   
+    const token = socket.handshake.query.token as string
+    const user = this.jwtService.verify(token)
+   
+    
+    if (user === null || user=== undefined) {
+      socket.disconnect()
     }
+    if (this.listUserOnline.findIndex((x)=> x.userId === user.id) !== -1) {
+      return
+    }
+    this.listUserOnline.push({socketId: socket.id,userId:user.id})
+    this.server.emit('newUserOnline', this.listUserOnline)
+    console.log('conect',this.listUserOnline);
   
+
+
   }
   handleDisconnect(client: Socket) {
+
+    this.listUserOnline = this.listUserOnline.filter((a) => a.socketId !== client.id)
+    console.log('disconneted',this.listUserOnline);
     
-    console.log('client', client.id,'disconected');
-    this.listUserOnline =  this.listUserOnline.filter((a)=> a.socketId === client.id)
-    console.log('array socket',this.listUserOnline);
-    
-    
+
   }
   afterInit(server: Server) {
     console.log('socket is Init')

@@ -11,7 +11,7 @@ export const fromDataEntity = <TDataEntity>(
     delete result['_id']
     return result
 };
-export const resulToGateWay = <Data>(message: string, payload?: Data, filedsDelete?: Array<keyof Data>) => {
+export const resulToGateWay = <Data>(message: string, payload?: Data | Array<Data>, filedsDelete?: Array<keyof Data>) => {
     if (payload === null || payload ===undefined) {
         const result = {
             message,
@@ -19,6 +19,7 @@ export const resulToGateWay = <Data>(message: string, payload?: Data, filedsDele
         }
         return result
     }
+`   `
     const result = {
         message,
         payload: fromDataEntity(payload, filedsDelete as Array<string>)

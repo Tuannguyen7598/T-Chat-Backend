@@ -4,14 +4,13 @@ import { MessagePattern, Payload } from "@nestjs/microservices";
 import { KeyToCommunicateUserServer, UserActonTypeAccount, UserDto, resulToGateWay } from "libs/share/model";
 import { Model } from "mongoose";
 import { AuthService } from "./auth.service";
-import { Friend } from "libs/share/model/type/friend.interface";
+
 
 
 @Controller()
 export class AuthController {
   constructor(
     @Inject("USER_MODEL") private userModel: Model<UserDto>,
-    @Inject("FRIEND_MODEL") private friendModel: Model<Friend>,
     @Inject("HASH_PASSWORD") private hassPassword,
     private readonly authService: AuthService) { }
 
@@ -98,29 +97,17 @@ export class AuthController {
   }
 
 
-  @MessagePattern(KeyToCommunicateUserServer.getFriends)
-  async getFriends(@Payload() userId: string): Promise<any> {
-    const listFriend = await this.friendModel.find({id: userId})
-    if (listFriend === null ||listFriend === undefined) {
-      return resulToGateWay(UserActonTypeAccount.friendCollectionNotexist)
+  @MessagePattern(KeyToCommunicateUserServer.getUser)
+  async getUser(@Payload() userId: string): Promise<any> {
+    const listUser = await this.userModel.find({},{credentials:0})
+    if (listUser === null ||listUser === undefined) {
+      return resulToGateWay(UserActonTypeAccount.getUserFalse)
     }
-    console.log('list friend',listFriend);
     
-    // return resulToGateWay(UserActonTypeAccount.settingAccountFalse, listFriend, [])
+    return resulToGateWay(UserActonTypeAccount.settingAccountFalse, listUser, [])
    }
 
-   @MessagePattern(KeyToCommunicateUserServer.addFriend)
-   async addFriend(@Payload() add:{userId:string, friend:Pick<UserDto, 'id'| 'username' >}):Promise<any>{
-      const findUser =await this.friendModel.findOne({id: add.userId})
-      if (findUser.toObject() === null || findUser.toObject() === undefined) {
-        return resulToGateWay(UserActonTypeAccount.friendCollectionNotexist)
-      }
-      const addFriend = await this.friendModel.findOneAndUpdate({id: add.userId},{$addToSet: {listFriend: add.friend}})
-      if (addFriend === null || addFriend === undefined) {
-        return resulToGateWay(UserActonTypeAccount.addFriendFalse)
-      }
-      resulToGateWay(UserActonTypeAccount.addFriendSuccess,addFriend.toObject())
-   }
+  
 
 
 }

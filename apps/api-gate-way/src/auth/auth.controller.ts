@@ -102,25 +102,18 @@ export class AuthController {
   }
 
 
+
   @Auth('admin', 'user')
-  @Get('get-friends')
-  async  getFriends(@Body() user: any,@Req() req: any): Promise<any> {
-    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.getFriends,{userId: req.userInfor}))
-    if (result.message === UserActonTypeAccount.friendCollectionNotexist) {
+  @Get('get-user')
+  async  getUsers(): Promise<any> {
+    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.getUser,''))
+    if (result.message === UserActonTypeAccount.getUserFalse) {
       return result.message
     }
+   
     
-    return result.payload
+    return Object.values(result.payload)
   }
 
-  @Auth('admin','user')
-  @ApiParam({name: 'id',description: 'userId'})
-  @Post('add-friend')
-  async addFriend(@Body() friend: AddFriendDto, @Query('userId') userId: string ): Promise<any>{
-    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.addFriend,{userId: userId,friend: friend}))
-    if (result.message === UserActonTypeAccount.addFriendFalse) {
-      return result.message
-    }
-    return result.payload
-  }
+  
 }

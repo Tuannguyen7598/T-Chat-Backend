@@ -87,15 +87,14 @@ export enum UserActonTypeAccount {
       settingAccountSuccess = "Setting Account Success",
       deleteAccountFalse = "Delete Acconnt False",
       deleteAccountSuccess = "Delete Account Success",
-      friendCollectionNotexist = 'Friend collection does not exist',
-      addFriendFalse = "Add Friend False",
-      addFriendSuccess = "Add Friend Success"
+      getUserSuccess = "Get User Success",
+      getUserFalse = "Get User False"
 }
 export enum KeyToCommunicateUserServer {
       login = "Login",
       register = "Register",
       settingAccount = "Setting Account",
       deleteAccount = "Delete Accont",
-      getFriends = "Get-Friends",
+      getUser = "Get User",
       addFriend = "Add Friend"
 }
