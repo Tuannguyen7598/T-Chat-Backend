@@ -49,6 +49,8 @@ export class UserDto {
       @IsEnum({ a: 'user', b: 'admin' })
       role: UserRole = UserRole.user;
 
+     
+
       @Prop({ type: 'Date', default: new Date(), required: true, })
       @IsOptional()
       @ApiProperty()

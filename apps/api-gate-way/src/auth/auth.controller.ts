@@ -16,7 +16,6 @@ import { Request } from 'express';
 import { AddFriendDto } from './dto/userLogin.dto';
 
 
-
 @Controller('')
 @ApiTags('login')
 @ApiBearerAuth()
@@ -31,7 +30,7 @@ export class AuthController {
 
   @Get('')
   async tesst2() {
-    console.log('heloo');
+   
 
   }
 

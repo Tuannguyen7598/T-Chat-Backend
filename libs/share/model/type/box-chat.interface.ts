@@ -12,11 +12,11 @@ export class BoxChatPerSonalDto {
     @Prop({ default: uuid(), require: true })
     id: string = uuid()
 
-    @Prop({ required: true, type:  PickType(UserDto,['id','username'])})
-    userOne: Pick<UserDto, 'id' | 'username'> = { id: '', username: '' }
+    @Prop({ required: true})
+    userOneId: string = ''
 
-    @Prop({ required: true, type:  PickType(UserDto,['id','username'])})
-    userTwo: Pick<UserDto, 'id' | 'username'> = { id: '', username: '' }
+    @Prop({ required: true})
+    userTwoId: string = ''
 
     @Prop({ required: true })
     createAt: Date = new Date()

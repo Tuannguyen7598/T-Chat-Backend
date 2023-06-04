@@ -29,6 +29,12 @@ export class Message {
     boxChatId: string
 
     @Prop({required: true})
+    from:string
+
+    @Prop({required: true})
+    to:string
+
+    @Prop({required: true})
     type: TypeMessage = TypeMessage.Text
 
     @Prop({required: true})
@@ -42,6 +48,9 @@ export class Message {
 
     @Prop({required: true})
     isDelete: boolean = false
+
+    @Prop({required: true})
+    isSeen: boolean = false
 
     static createObj = (src?: Partial<Message>): Message => {
         const obj = new Message();
