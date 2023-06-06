@@ -38,43 +38,67 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
   @SubscribeMessage('get-box-chat')
   async getBoxChat(@MessageBody() userId: string, @ConnectedSocket() client: Socket) {
     const boxChat = await this.boxChatPersonalModel.findOne({ $or: [{ userOneId: userId }, { userTwoId: userId }] })
-    const clientOnline = this.listUserOnline.find((x) => x.socketId === client.id)
+   
+    
+    const userSendMessage = this.listUserOnline.find((x) => x.socketId ===  client.id)
+    const userReciverSMessage = this.listUserOnline.find((y)=> y.userId === userId)
     if (!boxChat) {
-      const newBoxChat = (await this.boxChatPersonalModel.create(BoxChatPerSonalDto.createObj({ userOneId: clientOnline.userId, userTwoId: userId })))
+      const newBoxChat = (await this.boxChatPersonalModel.create(BoxChatPerSonalDto.createObj({ userOneId: userSendMessage.userId, userTwoId: userId })))
       if (!newBoxChat) {
         return 'error'
       }
       return newBoxChat.toObject()
 
     }
-
-    const seenMessage = this.messageModel.updateMany({ boxChatId: boxChat.toObject().id }, { $set: { isSeen: true } })
+   
+    const seenMessage = await this.messageModel.updateMany({ from: userId}, { $set: { isSeen: true } })
     const listMessage = await this.messageModel.find({ boxChatId: boxChat.toObject().id }, { _id: 0 }).sort({ createAt: -1 }).limit(20)
-    clientOnline.isOnBoxChat = userId
-    console.log(this.listUserOnline);
-
-    return { ...boxChat.toObject(), listMessage: listMessage }
+   
+    
+    userSendMessage.isOnBoxChat = userId
+    const result = []
+    const getList =(await this.messageModel.find({ isSeen: false }, { _id: 0, from: 1 })).forEach((x) => {
+      result.push(x.from)
+    })
+    this.server.to(userReciverSMessage?.socketId ?? '').emit('recive-message', {listMessage: listMessage , listMessageIsNotSeen: []})
+    return { ...boxChat.toObject(), listMessage: listMessage,listMessageIsNotSeen : result }
 
   }
 
   @SubscribeMessage('send-message')
   async sendMessage(@MessageBody() message: Message, @ConnectedSocket() client: Socket) {
-
+   
     const userRecive = this.listUserOnline.find((x) => x.userId === message.to)
-    if (userRecive && userRecive.isOnBoxChat === message.to) {
+    if (userRecive && userRecive.isOnBoxChat === message.from) {
       const newMessage = this.messageModel.create({ ...message, isSeen: true })
       if (!newMessage) {
         return 'error'
       }
+  
+ 
+      
+      const result = []
+      const getListMessageIsNotsSeen =  (await this.messageModel.find({ isSeen: false }, { _id: 0, from: 1 })).forEach((x)=> {result.push(x.from)})
       const listMessage = await this.messageModel.find({ boxChatId: message.boxChatId }, { _id: 0 }).sort({ createAt: -1 }).limit(20)
-      this.server.to(userRecive.socketId).emit('recive-message', listMessage)
+      this.server.to(userRecive.socketId).emit('recive-message', {listMessage: listMessage , listMessageIsNotSeen: result})
+      
       return listMessage
     }
-    const newMessage = this.messageModel.create(message)
+   
+    const newMessage =await this.messageModel.create(message)
     if (!newMessage) {
+    
       return 'error'
     }
     const listMessage = await this.messageModel.find({ boxChatId: message.boxChatId }, { _id: 0 }).sort({ createAt: -1 }).limit(20)
+    if (userRecive) {
+      const result = []
+      const getListMessageIsNotsSeen =  (await this.messageModel.find({ isSeen: false }, { _id: 0, from: 1 })).forEach((x)=> {result.push(x.from)})
+      const listMessage = await this.messageModel.find({ boxChatId: message.boxChatId }, { _id: 0 }).sort({ createAt: -1 }).limit(20)
+      
+      this.server.to(userRecive.socketId).emit('recive-message', {listMessageIsNotSeen: result})
+    }
+   
     return listMessage
   }
 
@@ -82,8 +106,12 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
 
   @SubscribeMessage('get-is-seen')
   async getListIsSeen(@ConnectedSocket() client: Socket) {
-    const getList = this.messageModel.find({ isSeen: false }, { _id: 0, to: 1 })
-    return getList
+    const result = []
+    const getList =(await this.messageModel.find({ isSeen: false }, { _id: 0, from: 1 })).forEach((x) => {
+      result.push(x.from)
+    })
+   
+    return result
   }
 
 
@@ -100,6 +128,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
     if (this.listUserOnline.findIndex((x) => x.userId === user.id) !== -1) {
       this.listUserOnline.filter((x) => x.userId !== user.id)
       this.listUserOnline.push({ socketId: socket.id, userId: user.id, username: user.username, isOnBoxChat: '' })
+      this.server.emit('newUserOnline', this.listUserOnline)
       return
     }
     this.listUserOnline.push({ socketId: socket.id, userId: user.id, username: user.username, isOnBoxChat: '' })
