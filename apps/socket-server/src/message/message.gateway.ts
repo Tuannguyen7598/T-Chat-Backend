@@ -142,7 +142,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
 
     this.listUserOnline = this.listUserOnline.filter((a) => a.socketId !== client.id)
     this.server.emit('newUserOnline', this.listUserOnline)
-    console.log('disconnetedd', this.listUserOnline);
+    console.log('disconneteddd', this.listUserOnline);
 
 
   }
