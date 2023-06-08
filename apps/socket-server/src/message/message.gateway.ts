@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Body, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
@@ -7,6 +7,7 @@ import { BoxChatPerSonalDto, Message } from 'libs/share/model';
 import { Model } from 'mongoose';
 import { Server, Socket } from 'socket.io';
 import { MessageService } from './message.service';
+import { FileUploadDto } from './dto/file-upload.dto';
 
 interface ListSocketOnConnect {
   socketId: string;
@@ -115,6 +116,12 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
   }
 
 
+  @SubscribeMessage('upload-image')
+  async uploadImage(@MessageBody() file:FileUploadDto,@ConnectedSocket() client: Socket) {
+    console.log(file);
+    
+    return 'ok'
+  }
 
   handleConnection(socket: Socket, ...args: any[]) {
 
@@ -134,9 +141,6 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
     this.listUserOnline.push({ socketId: socket.id, userId: user.id, username: user.username, isOnBoxChat: '' })
     this.server.emit('newUserOnline', this.listUserOnline)
     console.log('conect', this.listUserOnline);
-
-
-
   }
   handleDisconnect(client: Socket) {
 
@@ -148,6 +152,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
   }
   afterInit(server: Server) {
     console.log('socket is Init')
+
   }
 
 
