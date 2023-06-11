@@ -1,4 +1,4 @@
-import { Body, Inject, UploadedFile } from '@nestjs/common';
+import { Body, Inject, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
@@ -10,7 +10,8 @@ import { MessageService } from './message.service';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { fstat, fsync } from 'fs';
 import * as fs from 'fs'
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as path from 'path';
 
 interface ListSocketOnConnect {
   socketId: string;
@@ -22,8 +23,6 @@ interface ListSocketOnConnect {
   cors: {
     origin: '*',
   },
-
-
 })
 export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   constructor(
@@ -120,16 +119,22 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
 
 
   @SubscribeMessage('upload-image')
-  async uploadImage(@MessageBody() file: {fileName: string,fileData: any}) {
+  async uploadImage(@MessageBody() payload: {message: Message,fileName: string, fileData: string}) {
+  console.log(payload.message);
   
-    const path = require('path')
-    const path2 = path.join(__dirname,'..','..','..',`/upload/${file.fileName}`)
-    const base64Data = file.fileData.replace(/^data:image\/png;base64,/, '')
-    fs.createWriteStream(path2,'base64url').write(base64Data)
+   
+    const pathImg = path.join(__dirname,'..','..','..',`/upload/${payload.fileName}`)
+    
+    
+    const base64Data = payload.fileData.replace(/^data:image\/png;base64,/, '')
+    fs.createWriteStream(pathImg,'base64url').write(base64Data)
   
     
     return 'ok'
   }
+
+ 
+ 
 
   handleConnection(socket: Socket, ...args: any[]) {
 
@@ -162,6 +167,8 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
     console.log('socket is Init')
 
   }
+
+
 
 
 }

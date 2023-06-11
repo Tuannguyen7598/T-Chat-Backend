@@ -38,7 +38,11 @@ export class Message {
     type: TypeMessage = TypeMessage.Text
 
     @Prop({required: true})
+    pathImg : string = ''
+
+    @Prop({required: true})
     content : string = ''
+
 
     @Prop({required: true})
     reaction: Array<Reaction> = []
