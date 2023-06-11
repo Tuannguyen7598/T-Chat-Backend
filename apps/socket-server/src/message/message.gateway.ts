@@ -1,4 +1,4 @@
-import { Body, Inject } from '@nestjs/common';
+import { Body, Inject, UploadedFile } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
@@ -8,6 +8,9 @@ import { Model } from 'mongoose';
 import { Server, Socket } from 'socket.io';
 import { MessageService } from './message.service';
 import { FileUploadDto } from './dto/file-upload.dto';
+import { fstat, fsync } from 'fs';
+import * as fs from 'fs'
+
 
 interface ListSocketOnConnect {
   socketId: string;
@@ -117,8 +120,13 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
 
 
   @SubscribeMessage('upload-image')
-  async uploadImage(@MessageBody() file:FileUploadDto,@ConnectedSocket() client: Socket) {
-    console.log(file);
+  async uploadImage(@MessageBody() file: {fileName: string,fileData: any}) {
+  
+    const path = require('path')
+    const path2 = path.join(__dirname,'..','..','..',`/upload/${file.fileName}`)
+    const base64Data = file.fileData.replace(/^data:image\/png;base64,/, '')
+    fs.createWriteStream(path2,'base64url').write(base64Data)
+  
     
     return 'ok'
   }
@@ -146,7 +154,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
 
     this.listUserOnline = this.listUserOnline.filter((a) => a.socketId !== client.id)
     this.server.emit('newUserOnline', this.listUserOnline)
-    console.log('disconneteddd', this.listUserOnline);
+    console.log('disconneted', this.listUserOnline);
 
 
   }
