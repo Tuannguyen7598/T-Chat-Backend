@@ -28,9 +28,9 @@ export class AuthController {
   
 
 
-  @Get('')
+  @Get('test')
   async tesst2() {
-   
+
 
   }
 

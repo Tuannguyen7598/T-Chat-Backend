@@ -34,7 +34,7 @@ export class AuthController {
     })
     
     const createUser = (await this.userModel.create(newUser)).toObject()
-    console.log('test2',createUser);
+  
     if (createUser === null || createUser === undefined) {
       return resulToGateWay(UserActonTypeAccount.registerFalse, user, [])
     }

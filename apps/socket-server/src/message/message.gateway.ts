@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
 
-import { BoxChatPerSonalDto, Message } from 'libs/share/model';
+import { BoxChatPerSonalDto, Image, Message } from 'libs/share/model';
 import { Model } from 'mongoose';
 import { Server, Socket } from 'socket.io';
 import { MessageService } from './message.service';
@@ -119,16 +119,16 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
 
 
   @SubscribeMessage('upload-image')
-  async uploadImage(@MessageBody() payload: {message: Message,fileName: string, fileData: string}) {
-  console.log(payload.message);
-  
-   
-    const pathImg = path.join(__dirname,'..','..','..',`/upload/${payload.fileName}`)
+  async uploadImage(@MessageBody() payload: {message: Message, image:Array<Image>}) {
+    payload.image.forEach((value,index) => {
+      const pathImg = path.join(__dirname,'..','..','..',`/upload/${value.imgName}`)
     
     
-    const base64Data = payload.fileData.replace(/^data:image\/png;base64,/, '')
-    fs.createWriteStream(pathImg,'base64url').write(base64Data)
-  
+      const base64Data = value.imgData.replace(/^data:image\/png;base64,/, '')
+      fs.createWriteStream(pathImg,'base64url').write(base64Data)
+    
+    })
+    
     
     return 'ok'
   }
@@ -140,7 +140,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
 
     const token = socket.handshake.query.token as string
     const user = this.jwtService.verify(token)
-
+    
 
     if (user === null || user === undefined) {
       socket.disconnect()
@@ -167,8 +167,5 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
     console.log('socket is Init')
 
   }
-
-
-
 
 }

@@ -2,6 +2,10 @@
 import { Prop, Schema } from "@nestjs/mongoose";
 import { v4 as uuid } from "uuid";
 
+export interface Image {
+    imgData: any
+    imgName: string
+}
 
 export enum TypeMessage {
     Text = "Text",
@@ -38,7 +42,7 @@ export class Message {
     type: TypeMessage = TypeMessage.Text
 
     @Prop({required: true})
-    pathImg : string = ''
+    pathImg : Array<string> = []
 
     @Prop({required: true})
     content : string = ''

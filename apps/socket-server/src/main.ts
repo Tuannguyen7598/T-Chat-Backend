@@ -7,15 +7,15 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as socketio from 'socket.io';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({allowedHeaders:['Access-Control-Allow-Origin']});
+  app.enableCors();
   const server = app.getHttpServer()
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true, transformOptions: { enableImplicitConversion: true } }))
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const config = new DocumentBuilder()
   .addBearerAuth()
-  .setTitle('API_GATEWAY')
-  .setDescription('The APIGATEWAY description')
+  .setTitle('socket')
+  .setDescription('Socket')
   .setVersion('1.0')
   .build();
 const document = SwaggerModule.createDocument(app, config);
