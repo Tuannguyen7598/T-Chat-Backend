@@ -11,7 +11,7 @@ import { diskStorage } from 'multer';
   imports:[DatabaseModule, JwtModule.register({
     secret: "tuan",
     signOptions: {
-      expiresIn: 86400,
+      expiresIn: 7 * 60 *60 *60,
     },
   })],
   providers: [MessageGateway, MessageService,...dbProviders]

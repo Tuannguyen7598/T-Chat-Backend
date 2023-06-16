@@ -1,35 +1,36 @@
-import { Body, Controller, Get, Post, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
-import { diskStorage } from "multer";
-import { AppService } from "./app.service";
+import { Body, Controller, Inject, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { Message } from "libs/share/model";
+import { ConfigSocketServer, Message } from "libs/share/model";
+import { RequestDataInterceptor } from "libs/share/model/lib/interceptor/upload_file.interceptor";
+import { AppService } from "./app.service";
+import * as fs from 'fs'
+import { Model } from "mongoose";
+
 
 @Controller()
 export class AppController {
   constructor(
-
+    @Inject("MESSAGE_MODEL") private messageModel: Model<Message>,
     private readonly appService: AppService) { }
 
   @Post('image')
-  @UseInterceptors(
-    FilesInterceptor('files', null, {
-      storage: diskStorage({
-        destination: './upload', // Thư mục lưu trữ tệp
-        filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, file.fieldname + '-' + uniqueSuffix);
-        },
-      }),
-      limits: {
-        fileSize: 1024 * 1024 * 10, // Giới hạn kích thước tệp tin (ở đây là 10MB)
-      },
-    }),
+  @UseInterceptors( RequestDataInterceptor,
+    FilesInterceptor('files'),
   )
-  async upload(@UploadedFiles() files: any,@Body() body:any): Promise<any> {
-    console.log(files);
-    const bodyParser:Message = JSON.parse(body.body)
-    console.log(bodyParser);
+  async upload(@UploadedFiles() files:Array<Express.Multer.File> ,@Body() data:any): Promise<any> {
+   
+    let message:Message = JSON.parse(data.body)
+
     
+    files.forEach((file) => {
+      const path = `./upload/${message.from}`
+      if (!fs.existsSync(path)) {
+        fs.mkdirSync(path)
+      }
+      fs.writeFileSync(`${path}/${file.originalname}`,file.buffer)
+      message.pathImg.push(`${ConfigSocketServer.host}:${ConfigSocketServer.port}/upload/${message.from}/${file.originalname}`)
+    })
+    await this.messageModel.create(message)
     
     return "ok"
   }

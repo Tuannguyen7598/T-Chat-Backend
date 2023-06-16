@@ -19,7 +19,7 @@ import { AuthService } from './auth.service';
   JwtModule.register({
     secret: "tuan",
     signOptions: {
-      expiresIn: 86400,
+      expiresIn: 7 * 60 * 60 * 60,
     },
   }),],
   controllers: [AuthController],

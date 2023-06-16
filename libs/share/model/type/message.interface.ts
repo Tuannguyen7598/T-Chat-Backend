@@ -44,7 +44,7 @@ export class Message {
     @Prop({required: true})
     pathImg : Array<string> = []
 
-    @Prop({required: true})
+    @Prop()
     content : string = ''
 
 
