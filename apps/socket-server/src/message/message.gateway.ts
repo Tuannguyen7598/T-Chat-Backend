@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
 
-import { BoxChatPerSonalDto, Image, Message } from 'libs/share/model';
+import { BoxChatPerSonalDto, Image, Message, TypeMessage } from 'libs/share/model';
 import { Model } from 'mongoose';
 import { Server, Socket } from 'socket.io';
 import { MessageService } from './message.service';
@@ -70,16 +70,22 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
 
   @SubscribeMessage('send-message')
   async sendMessage(@MessageBody() message: Message, @ConnectedSocket() client: Socket) {
-   
     const userRecive = this.listUserOnline.find((x) => x.userId === message.to)
+    if (message.type === TypeMessage.Image) {
+      const result = []
+      const getListMessageIsNotsSeen =  (await this.messageModel.find({ isSeen: false }, { _id: 0, from: 1 })).forEach((x)=> {result.push(x.from)})
+      const listMessage = await this.messageModel.find({ boxChatId: message.boxChatId }, { _id: 0 }).sort({ createAt: -1 }).limit(20)
+      if (userRecive && userRecive.isOnBoxChat === message.from) {    
+        this.server.to(userRecive.socketId).emit('recive-message', {listMessage: listMessage , listMessageIsNotSeen: result})
+      
+      }
+      return listMessage
+    }
     if (userRecive && userRecive.isOnBoxChat === message.from) {
       const newMessage = this.messageModel.create({ ...message, isSeen: true })
       if (!newMessage) {
         return 'error'
-      }
-  
- 
-      
+      }     
       const result = []
       const getListMessageIsNotsSeen =  (await this.messageModel.find({ isSeen: false }, { _id: 0, from: 1 })).forEach((x)=> {result.push(x.from)})
       const listMessage = await this.messageModel.find({ boxChatId: message.boxChatId }, { _id: 0 }).sort({ createAt: -1 }).limit(20)
@@ -134,7 +140,9 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect,
   }
 
  
- 
+ async sendFileByApi(toUserId: string){
+  this.server.to(toUserId).emit('sendfile')
+ }
 
   handleConnection(socket: Socket, ...args: any[]) {
 

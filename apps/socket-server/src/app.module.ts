@@ -8,6 +8,7 @@ import { dbProviders } from "./message/database/db.provider";
 import { MessageModule } from './message/message.module';
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
+import { MessageGateway } from "./message/message.gateway";
 
 
 @Module({

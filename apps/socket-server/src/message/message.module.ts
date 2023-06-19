@@ -14,6 +14,7 @@ import { diskStorage } from 'multer';
       expiresIn: 7 * 60 *60 *60,
     },
   })],
-  providers: [MessageGateway, MessageService,...dbProviders]
+  providers: [MessageGateway, MessageService,...dbProviders],
+  exports:[MessageGateway]
 })
 export class MessageModule {}

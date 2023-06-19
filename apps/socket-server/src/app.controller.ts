@@ -11,6 +11,7 @@ import { Model } from "mongoose";
 export class AppController {
   constructor(
     @Inject("MESSAGE_MODEL") private messageModel: Model<Message>,
+    
     private readonly appService: AppService) { }
 
   @Post('image')
