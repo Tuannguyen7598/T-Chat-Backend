@@ -4,7 +4,6 @@ import { ClientsModule } from '@nestjs/microservices';
 import { Transport } from '@nestjs/microservices/enums';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-
 @Module({
   imports: [ClientsModule.register([
     {
@@ -21,7 +20,9 @@ import { AuthService } from './auth.service';
     signOptions: {
       expiresIn: 7 * 60 * 60 * 60,
     },
-  }),],
+  }),
+
+  ],
   controllers: [AuthController],
   providers: [AuthService],
 })

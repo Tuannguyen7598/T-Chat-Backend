@@ -25,7 +25,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private jwtService: JwtService
   ) { }
-  
+
 
 
   @Get('test')
@@ -54,10 +54,10 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Logged In' })
   @ApiBadRequestResponse({ status: 400, description: 'Validation Error' })
   async getUser(@Body() user: UserDto): Promise<any> {
-   
-    
+
+
     const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.login, user))
-    
+
     if (result.message === UserActonTypeAccount.loginFalse) {
       return result.message;
     }
@@ -96,6 +96,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Logged In' })
   @ApiBadRequestResponse({ status: 400, description: 'Validation Error' })
   async deleteAcount(@Param('id') userId: string): Promise<any> {
+
     const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.deleteAccount, userId))
     return result.message
   }
@@ -104,15 +105,15 @@ export class AuthController {
 
   @Auth('admin', 'user')
   @Get('get-user')
-  async  getUsers(): Promise<any> {
-    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.getUser,''))
+  async getUsers(): Promise<any> {
+    const result: ResultToApiGateWay<UserDto> = await firstValueFrom(this.Redis.send(KeyToCommunicateUserServer.getUser, ''))
     if (result.message === UserActonTypeAccount.getUserFalse) {
       return result.message
     }
     return Object.values(result.payload)
   }
 
-  
-  
-  
+
+
+
 }
