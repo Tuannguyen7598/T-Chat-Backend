@@ -1,6 +1,6 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { UserServiceConfig } from "common/config/config";
+import { ConversationServiceConfig } from "common/config/config";
 import { AppModule } from "./app.module";
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -12,8 +12,11 @@ async function bootstrap() {
 			transformOptions: { enableImplicitConversion: true },
 		})
 	);
-	await app.listen(UserServiceConfig.PORT, () => {
-		console.log("User server listen on port:", UserServiceConfig.PORT);
+	await app.listen(ConversationServiceConfig.PORT, () => {
+		console.log(
+			"Conversation service listen on port:",
+			ConversationServiceConfig.PORT
+		);
 	});
 }
 bootstrap();
