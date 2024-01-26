@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { useContainer } from "class-validator";
 import { GateWayConfig } from "common/config/config";
+import { Transport } from "@nestjs/microservices";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -16,6 +17,16 @@ async function bootstrap() {
 			transformOptions: { enableImplicitConversion: true },
 		})
 	);
+	app.connectMicroservice({
+		transport: Transport.KAFKA,
+		options: {
+			client: {
+				clientId: "api-gateway",
+				brokers: ["localhost:29092"],
+			},
+		},
+	});
+	app.startAllMicroservices();
 	const config = new DocumentBuilder()
 		.addBearerAuth()
 		.setTitle("API_GATEWAY")
