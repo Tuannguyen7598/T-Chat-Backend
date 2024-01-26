@@ -27,6 +27,10 @@
 
 The T-Chat backend is a microservice system, whose primary function is a high-speed real-time chat system. It is developed following a microservice architecture that is highly scalable and ready for extensive availability and can withstand high loads.
 
+## Infrastructure 
+
+[image.png]
+
 ## Installation
 
 ```bash
