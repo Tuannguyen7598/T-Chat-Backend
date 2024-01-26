@@ -24,7 +24,12 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+
+The T-Chat backend is a microservice system, whose primary function is a high-speed real-time chat system. It is developed following a microservice architecture that is highly scalable and ready for extensive availability and can withstand high loads.
+
+## Infrastructure 
+
+![images](image.png)
 
 ## Installation
 
@@ -64,9 +69,8 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- Author - Nguyễn Quang Tuấn
+
 
 ## License
 
