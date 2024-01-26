@@ -29,7 +29,7 @@ The T-Chat backend is a microservice system, whose primary function is a high-sp
 
 ## Infrastructure 
 
-![images](images.png)
+![images](image.png)
 
 ## Installation
 
